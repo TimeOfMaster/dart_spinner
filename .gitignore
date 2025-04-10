@@ -1,0 +1,22 @@
+# Dart specific
+.dart_tool/
+.packages
+build/
+pubspec.lock
+
+# IDE specific
+.idea/
+.vscode/
+*.iml
+
+# Generated files
+*.dart.js
+*.js_
+*.js.deps
+*.js.map
+
+doc/api/
+
+# System files
+.DS_Store
+Thumbs.db
