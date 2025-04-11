@@ -3,18 +3,21 @@ import 'dart:async';
 
 /// Creates an animated spinner effect in the terminal.
 ///
-/// The class comes with three built-in frame sets:
-/// - [defaultFrames]: Basic ASCII spinner ['|', '/', '-', '\']
-/// - [brailleFrames]: Braille animation ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
-/// - [brailleFrames2]: Alternative Braille dots animation ['⠿', '⠷', '⠯', '⠟', '⠻', '⠽', '⠾']
+/// The class comes with four built-in frame sets:
+/// - [defaultFrames]: Basic ASCII spinner `['|', '/', '-', '\\']`
+/// - [brailleFrames]: Braille animation `['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']`
+/// - [brailleFrames2]: Alternative Braille dots animation `['⠿', '⠷', '⠯', '⠟', '⠻', '⠽', '⠾']`
+/// - [arcFrames]: Arc movement `['◜', '◠', '◝', '◞', '◡', '◟']`
 class TerminalSpinner {
   final List<String> _frames;
   final Duration _interval;
-  String message;
+  String prefix;
+  String suffix;
 
   static const List<String> defaultFrames = ['|', '/', '-', r'\'];
   static const List<String> brailleFrames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
   static const List<String> brailleFrames2 = ['⠿', '⠷', '⠯', '⠟', '⠻', '⠽', '⠾'];
+  static const List<String> arcFrames = ['◜', '◠', '◝', '◞', '◡', '◟'];
 
   Timer? _timer;
   int _frameIndex = 0;
@@ -24,16 +27,18 @@ class TerminalSpinner {
 
   /// Creates a terminal spinner.
   ///
-  /// - [message]: Text to display before the spinner. Defaults to empty string.
+  /// - [prefix]: Text to display before the spinner. Defaults to empty string.
+  /// - [suffix]: Text to display after the spinner. Defaults to empty string.
   /// - [interval]: How often the spinner frame updates. Defaults to 100ms.
   /// - [frames]: The sequence of characters to cycle through for the animation.
   ///            Defaults to [defaultFrames] if not specified.
   TerminalSpinner({
-    this.message = '', // Default to empty if no message needed
+    this.prefix = '',
+    this.suffix = '',
     Duration interval = const Duration(milliseconds: 100),
     List<String>? frames,
   }) : _frames = frames ?? defaultFrames,
-       _interval = interval; // Initialize _interval
+       _interval = interval;
 
   /// Starts the spinner animation.
   void start() {
@@ -80,9 +85,9 @@ class TerminalSpinner {
     if (!_isRunning) return;
 
     final frame = _frames[_frameIndex % _frames.length];
-    // Add a space between message and frame if message is not empty
-    final messageSeparator = message.isNotEmpty ? ' ' : '';
-    _currentOutput = '$message$messageSeparator$frame';
+    final prefixSeparator = prefix.isNotEmpty ? ' ' : '';
+    final suffixSeparator = suffix.isNotEmpty ? ' ' : '';
+    _currentOutput = '$prefix$prefixSeparator$frame$suffixSeparator$suffix';
     _lastOutputLength = _currentOutput.length;
 
     // '\r' moves the cursor to the beginning of the line
@@ -97,21 +102,24 @@ class TerminalSpinner {
   /// ```
   /// await TerminalSpinner.run(
   ///   () => Future.delayed(Duration(seconds: 2)),
-  ///   startMessage: "Working...",
+  ///   startPrefix: "Working...",
+  ///   startSuffix: "Loading...",
   ///   doneMessage: "Finished!",
   ///   frames: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
   /// );
   /// ```
   static Future<T> run<T>(
       Future<T> Function() task, {
-        String startMessage = 'Working...',
-        String? doneMessage = 'Done.', // Null message means no final output on stop
-        String errorMessage = 'Error.', // Message shown if task throws exception
+        String startPrefix = 'Working...',
+        String startSuffix = '',
+        String? doneMessage = 'Done.',
+        String errorMessage = 'Error.',
         Duration interval = const Duration(milliseconds: 100),
         List<String>? frames,
       }) async {
     final spinner = TerminalSpinner(
-      message: startMessage,
+      prefix: startPrefix,
+      suffix: startSuffix,
       interval: interval,
       frames: frames,
     );

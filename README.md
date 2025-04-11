@@ -4,7 +4,7 @@ A customizable terminal spinner library for Dart applications. Create loading an
 
 ## Features
 
-- Multiple built-in spinner styles (ASCII and Braille patterns)
+- Multiple built-in spinner styles (ASCII, Braille and Arc patterns)
 - Customizable animation speed
 - Manual control for complex progress sequences
 - Automatic cleanup on completion
@@ -55,45 +55,29 @@ await TerminalSpinner.run(
   frames: TerminalSpinner.brailleFrames2,
   interval: const Duration(milliseconds: 100),
 );
+
+// Arc Pattern
+// Frames: ◜ ◠ ◝ ◞ ◡ ◟
+await TerminalSpinner.run(
+  () => yourAsyncTask(),
+  frames: TerminalSpinner.arcFrames,
+  interval: const Duration(milliseconds: 100),
+);
 ```
 
 ### Manual Control
 
 ```dart
 final spinner = TerminalSpinner(
-  message: 'Processing...',
+  prefix: 'Processing...',  // Updated to use prefix
+  suffix: '0%',
   frames: TerminalSpinner.brailleFrames,
 );
 
 spinner.start();
 // Do some work
-spinner.message = 'Almost done...';
+spinner.prefix = 'Almost done...';  // Updated to use prefix
+spinner.suffix = '50%';
 // Do more work
 spinner.stop(finalMessage: '✓ Complete');
 ```
-
-## API Reference
-
-### TerminalSpinner Class
-
-#### Constructor
-
-```dart
-TerminalSpinner({
-  String message = '',
-  Duration interval = const Duration(milliseconds: 100),
-  List<String>? frames,
-})
-```
-
-#### Static Methods
-
-- `run<T>()`: Run an async task with a spinner
-- `defaultFrames`: Default ASCII spinner frames
-- `brailleFrames`: First set of Braille pattern frames
-- `brailleFrames2`: Second set of Braille pattern frames
-
-#### Instance Methods
-
-- `start()`: Start the spinner animation
-- `stop({String? finalMessage})`: Stop the spinner and optionally show a final message
