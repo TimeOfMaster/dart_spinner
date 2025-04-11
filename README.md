@@ -81,3 +81,7 @@ spinner.suffix = '50%';
 // Do more work
 spinner.stop(finalMessage: '✓ Complete');
 ```
+
+## Attribution
+
+Favicon: ["Command Line"](https://icons8.com/icon/Q1AFc3pgrJGm/command-line) icon by [Icons8](https://icons8.com) (recolered)
